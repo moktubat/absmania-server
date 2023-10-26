@@ -28,25 +28,72 @@ async function run() {
     const blogsCollection = client.db("absManiaDb").collection("blogs");
     const recipesCollection = client.db("absManiaDb").collection("recipes");
     const trainersCollection = client.db("absManiaDb").collection("trainers");
+    const testimonialsCollection = client
+      .db("absManiaDb")
+      .collection("testimonials");
+    const usersCollection = client.db("absManiaDb").collection("users");
 
+    // ==============users db create====================
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const query = { email: user.email };
+      const existingUser = await usersCollection.findOne(query);
+      if (existingUser) {
+        return res.send("user already exists");
+      }
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
+
+    // ========get all users api============
+    app.get("/users", async (req, res) => {
+      let query = {};
+      const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // ======== get and post blogs api =============
     app.get("/blogs", async (req, res) => {
       const result = await blogsCollection.find().toArray();
       res.send(result);
     });
+    app.get("/blogs", async (req, res) => {
+      const result = await blogsCollection.find().toArray();
+      res.send(result);
+    });
+    // ======== get single blog api =============
+    app.get("/blog/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await blogsCollection.findOne(query);
+      res.send(result);
+    });
+    // ======== get all recipes api =============
     app.get("/recipes", async (req, res) => {
       const result = await recipesCollection.find().toArray();
       res.send(result);
     });
+
+    // ======== get all trainers api =============
     app.get("/trainers", async (req, res) => {
       const result = await trainersCollection.find().toArray();
       res.send(result);
     });
 
+    // ======== get and post testimonials api =============
+    app.get("/testimonials", async (req, res) => {
+      const result = await testimonialsCollection.find().toArray();
+      res.send(result);
+    });
+    app.post("/testimonials", async (req, res) => {
+      const feedback = req.body;
+      const result = await testimonialsCollection.insertOne(feedback);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    console.log("Connected to MongoDB ✅");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
