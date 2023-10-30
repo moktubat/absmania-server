@@ -24,14 +24,15 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-
+    
+    const usersCollection = client.db("absManiaDb").collection("users");
+    const workOutsCollection = client.db("absManiaDb").collection("workOuts");
+    const trainersCollection = client.db("absManiaDb").collection("trainers");
     const blogsCollection = client.db("absManiaDb").collection("blogs");
     const recipesCollection = client.db("absManiaDb").collection("recipes");
-    const trainersCollection = client.db("absManiaDb").collection("trainers");
     const testimonialsCollection = client
       .db("absManiaDb")
       .collection("testimonials");
-    const usersCollection = client.db("absManiaDb").collection("users");
 
     // ==============users db create====================
     app.post("/users", async (req, res) => {
@@ -52,6 +53,17 @@ async function run() {
       res.send(result);
     });
 
+    // ======== get and post work out api =============
+    app.get("/workOuts", async (req, res) => {
+      const result = await workOutsCollection.find().toArray();
+      res.send(result);
+    });
+    app.post("/workOuts", async (req, res) => {
+      const feedback = req.body;
+      const result = await workOutsCollection.insertOne(feedback);
+      res.send(result);
+    });
+    
     // ======== get and post blogs api =============
     app.get("/blogs", async (req, res) => {
       const result = await blogsCollection.find().toArray();
@@ -90,6 +102,8 @@ async function run() {
       const result = await testimonialsCollection.insertOne(feedback);
       res.send(result);
     });
+
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
