@@ -63,7 +63,13 @@ async function run() {
       const result = await workOutsCollection.insertOne(feedback);
       res.send(result);
     });
-    
+    // ======== get single work out api =============
+    app.get("/workOut/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await workOutsCollection.findOne(query);
+      res.send(result);
+    });
     // ======== get and post blogs api =============
     app.get("/blogs", async (req, res) => {
       const result = await blogsCollection.find().toArray();
