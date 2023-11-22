@@ -32,9 +32,7 @@ async function run() {
     const productsCollection = client.db("absManiaDb").collection("products");
     const blogsCollection = client.db("absManiaDb").collection("blogs");
     const foodDataCollection = client.db("absManiaDb").collection("foodData");
-    const testimonialsCollection = client
-      .db("absManiaDb")
-      .collection("testimonials");
+    const testimonialsCollection = client.db("absManiaDb").collection("testimonials");
 
     // ==============users db create====================
     app.post("/users", async (req, res) => {
@@ -86,6 +84,23 @@ async function run() {
       res.send(result);
     });
 
+    // ======== get and post testimonials api =============
+    app.get("/testimonials", async (req, res) => {
+      try {
+        const result = await testimonialsCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error retrieving testimonials:", error);
+        res.status(500).send({ message: "Internal Server Error" });
+      }
+    });
+
+    app.post("/testimonials", async (req, res) => {
+      const feedback = req.body;
+      const result = await testimonialsCollection.insertOne(feedback);
+      res.send(result);
+    });
+    
     // ======== get all recipes api =============
     app.get("/recipes", async (req, res) => {
       const result = await recipesCollection.find().toArray();
@@ -172,16 +187,7 @@ async function run() {
       res.send(result);
     });
 
-    // ======== get and post testimonials api =============
-    app.get("/testimonials", async (req, res) => {
-      const result = await testimonialsCollection.find().toArray();
-      res.send(result);
-    });
-    app.post("/testimonials", async (req, res) => {
-      const feedback = req.body;
-      const result = await testimonialsCollection.insertOne(feedback);
-      res.send(result);
-    });
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
