@@ -100,7 +100,13 @@ async function run() {
       const result = await testimonialsCollection.insertOne(feedback);
       res.send(result);
     });
-    
+
+    // ======== get all trainers api =============
+    app.get("/trainers", async (req, res) => {
+      const result = await trainersCollection.find().toArray();
+      res.send(result);
+    });
+
     // ======== get all recipes api =============
     app.get("/recipes", async (req, res) => {
       const result = await recipesCollection.find().toArray();
@@ -159,12 +165,6 @@ async function run() {
         console.error("Error retrieving product by ID and category:", error);
         res.status(500).send({ message: "Internal Server Error" });
       }
-    });
-
-    // ======== get all trainers api =============
-    app.get("/trainers", async (req, res) => {
-      const result = await trainersCollection.find().toArray();
-      res.send(result);
     });
 
     // ======== get all foodData api =============
