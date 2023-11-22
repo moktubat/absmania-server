@@ -30,9 +30,12 @@ async function run() {
     const trainersCollection = client.db("absManiaDb").collection("trainers");
     const recipesCollection = client.db("absManiaDb").collection("recipes");
     const productsCollection = client.db("absManiaDb").collection("products");
+    const cartsCollection = client.db("absManiaDb").collection("carts");
     const blogsCollection = client.db("absManiaDb").collection("blogs");
     const foodDataCollection = client.db("absManiaDb").collection("foodData");
-    const testimonialsCollection = client.db("absManiaDb").collection("testimonials");
+    const testimonialsCollection = client
+      .db("absManiaDb")
+      .collection("testimonials");
 
     // ==============users db create====================
     app.post("/users", async (req, res) => {
@@ -149,22 +152,31 @@ async function run() {
     app.get("/:category/:id", async (req, res) => {
       const category = req.params.category;
       const productId = req.params.id;
-    
+
       try {
         const result = await productsCollection.findOne({
           _id: new ObjectId(productId),
           category,
         });
-    
+
         if (result) {
           res.send(result);
         } else {
-          res.status(404).send({ message: "Product not found in the specified category" });
+          res
+            .status(404)
+            .send({ message: "Product not found in the specified category" });
         }
       } catch (error) {
         console.error("Error retrieving product by ID and category:", error);
         res.status(500).send({ message: "Internal Server Error" });
       }
+    });
+
+    // ======== get all carts api =============
+    app.post("/carts", async (req, res) => {
+      const product = req.body;
+      const result = await cartsCollection.insertOne(product);
+      res.send(result);
     });
 
     // ======== get all foodData api =============
@@ -186,8 +198,6 @@ async function run() {
       const result = await foodDataCollection.findOne(query);
       res.send(result);
     });
-
-    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
