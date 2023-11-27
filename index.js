@@ -174,10 +174,24 @@ async function run() {
 
     // ======== get all carts api =============
     app.post("/carts", async (req, res) => {
-      const product = req.body;
-      const result = await cartsCollection.insertOne(product);
-      res.send(result);
-    });
+  const { user } = req.headers;
+
+  // Assuming that user is a JSON string, parse it to obtain userName and email
+  const { name, email } = JSON.parse(user);
+
+  const product = req.body;
+
+  const cartItem = {
+    productId: product._id,
+    name: product.name,
+    image: product.image,
+    price: product.price,
+    email,
+  };
+
+  const result = await cartsCollection.insertOne(cartItem);
+  res.send(result);
+});
 
     // ======== get all foodData api =============
     app.get("/foodData", async (req, res) => {
