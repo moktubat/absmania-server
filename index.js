@@ -172,26 +172,38 @@ async function run() {
       }
     });
 
-    // ======== get all carts api =============
+    // ======== carts api collection =============
+    app.get("/carts", async (req, res) => {
+      const email = req.query.email;
+      console.log("Email:", email); // Add this line for debugging
+      if (!email) {
+        res.send([]);
+      }
+      const query = { email: email };
+      const result = await cartsCollection.find(query).toArray();
+      console.log("Result:", result); // Add this line for debugging
+      res.send(result);
+    });
+
     app.post("/carts", async (req, res) => {
-  const { user } = req.headers;
+      const { user } = req.headers;
 
-  // Assuming that user is a JSON string, parse it to obtain userName and email
-  const { name, email } = JSON.parse(user);
+      // Assuming that user is a JSON string, parse it to obtain userName and email
+      const { name, email } = JSON.parse(user);
 
-  const product = req.body;
+      const product = req.body;
 
-  const cartItem = {
-    productId: product._id,
-    name: product.name,
-    image: product.image,
-    price: product.price,
-    email,
-  };
+      const cartItem = {
+        productId: product._id,
+        name: product.name,
+        image: product.image,
+        price: product.price,
+        email,
+      };
 
-  const result = await cartsCollection.insertOne(cartItem);
-  res.send(result);
-});
+      const result = await cartsCollection.insertOne(cartItem);
+      res.send(result);
+    });
 
     // ======== get all foodData api =============
     app.get("/foodData", async (req, res) => {
